@@ -91,6 +91,11 @@ export class NoteUtils {
     return { note, delta, duration };
   }
 
+  public secondsToBeats(secs: number): number {
+    const mins = secs / 60;
+    return mins * this.bpm;
+  }
+
   public static midiNoteToMusicalString(midiNote: number): string | null {
     // Check for valid MIDI note number range (0-127)
     if (midiNote < 0 || midiNote > 127) {

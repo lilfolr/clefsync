@@ -16,7 +16,7 @@ export const darkTheme: AppTheme = {
   colors: {
     background: "#141414",
     gridLineMinor: "#4E1E1E",
-    gridLineMajor: "#2A2A2A",
+    gridLineMajor: "#333333",
     gridRowOdd: "#262626",
     gridRowEven: "#121212",
     gridPlaybackLine: "#FF0000",

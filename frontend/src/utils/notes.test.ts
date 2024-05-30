@@ -105,4 +105,20 @@ describe("Grid lines", () => {
       expect(NoteUtils.midiNoteToMusicalString(note)).toEqual(noteStr);
     });
   });
+
+  it("should convert from bpm", () => {
+    const utils = new NoteUtils({
+      timeSignature: {
+        beatsPerMeasure: 4,
+        beatNoteValue: 4,
+      },
+      pixelsPerBeat: 100,
+      barHeightPixels: 50,
+      bpm: 100,
+      highestNote: 96,
+    });
+
+    expect(utils.secondsToBeats(60)).toEqual(100);
+    expect(utils.secondsToBeats(120)).toEqual(200);
+  });
 });
