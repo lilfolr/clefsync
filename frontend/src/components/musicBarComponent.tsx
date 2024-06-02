@@ -5,21 +5,22 @@ import { Layer, Line, Rect, Stage } from "react-konva";
 import { AppTheme } from "../style/theme";
 import { KonvaEventObject } from "konva/lib/Node";
 import { LineConfig, Line as LineType } from "konva/lib/shapes/Line";
-import { TNote } from "../types";
+import { Note } from "../types";
+import { playNote } from "../midi/controller";
 
 export interface MusicBarProps {
   /**
    * Notes to render
    */
-  notes: TNote[];
+  notes: Note[];
 
   /**
    * Note change Callback
    */
 
-  setNotes?: (newNotes: TNote[]) => void;
+  setNotes?: (newNotes: Note[]) => void;
 
-  /**
+  /**   
    * Current playHead time in beats
    */
   playHeadTime?: number;
@@ -27,7 +28,7 @@ export interface MusicBarProps {
   /**
    * Callback to play a note
    */
-  onPlayNote?: (note: TNote) => void;
+  onPlayNote?: (note: Note) => void;
 
   /**
    * Beats per minute
@@ -45,7 +46,7 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
   const { playHeadTime, timeSignature, bpm, notes, setNotes, onPlayNote } = props;
   const cursorLineRef = useRef<LineType<LineConfig>>(null);
   const theme = useTheme() as AppTheme;
-  const [mouseDownNote, setMouseDownNote] = useState<null | TNote>(null);
+  const [mouseDownNote, setMouseDownNote] = useState<null | Note>(null);
 
   const defaultNewNoteSizeBeats = 1;
   const pixelsPerBeat = 20;
@@ -73,10 +74,8 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
   const onMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     const { pageX } = e.evt;
     const pageY = e.evt.pageY - 94; // FIXME: calculate from bounding box
-    const newNote = {
-      ...noteUtils.coordinateToNoteAndTick(pageX, pageY, 0),
-      duration: defaultNewNoteSizeBeats,
-    };
+    const newNote: Note = noteUtils.coordinateToNoteAndTick(pageX, pageY, 0);
+    newNote.end = newNote.start + defaultNewNoteSizeBeats;
     setMouseDownNote(newNote);
   };
 
@@ -90,10 +89,8 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
     if (mouseDownNote) {
       const { pageX } = e.evt;
       const pageY = e.evt.pageY - 94; // FIXME: calculate from bounding box
-      const newNote = {
-        ...noteUtils.coordinateToNoteAndTick(pageX, pageY, 0),
-        duration: defaultNewNoteSizeBeats,
-      };
+      const newNote: Note = noteUtils.coordinateToNoteAndTick(pageX, pageY, 0);
+      newNote.end = newNote.start + defaultNewNoteSizeBeats;
       setMouseDownNote(newNote);
     }
   };
@@ -107,8 +104,6 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
   const playHeadTimePixels = useMemo(() => pixelsPerBeat * (playHeadTime ?? 0), [playHeadTime]);
   const stageWidth = window.innerWidth;
   const stageHeight = window.innerHeight;
-
-  console.log("At", playHeadTimePixels);
 
   return (
     <Stage width={stageWidth} height={stageHeight}>

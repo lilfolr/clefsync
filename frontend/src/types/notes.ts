@@ -1,18 +1,20 @@
-/**
- * A Music note and time location
- */
-export type TNote = {
+export interface Note {
   /**
    * Note as a midi number
    */
   note: number;
   /**
-   * Time from the start in beats
+   * Time from the note starts in beats
+   * offset from start of song
    */
-  delta: number;
+  start: number;
   /**
-   * Hot long the note is played for
-   * in beats
+   * Time from the note ends in beats
+   * offset from start of song
    */
-  duration: number;
-};
+  end: number;
+}
+
+export interface NoteSequence {
+  notes: Note[];
+}

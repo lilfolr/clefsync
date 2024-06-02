@@ -1,4 +1,4 @@
-import { TNote } from "../types";
+import { Note } from "../types";
 
 export interface NoteUtilsProps {
   /**
@@ -66,14 +66,15 @@ export class NoteUtils {
     return this.majorGridLinesResolution / this.timeSignature.beatNoteValue;
   }
 
-  public noteAndTickToCoordinate(temporalNote: TNote): {
+  public noteAndTickToCoordinate(temporalNote: Note): {
     x: number;
     y: number;
     width: number;
   } {
-    const { note, duration, delta } = temporalNote;
+    const { note, start, end } = temporalNote;
+    const duration = end - start;
     const y = (this.highestNote - note) * this.barHeightPixels;
-    const x = Math.floor(delta * this.pixelsPerBeat);
+    const x = Math.floor(start * this.pixelsPerBeat);
     const width = Math.floor(duration * this.pixelsPerBeat);
     return { x, y, width };
   }
@@ -83,12 +84,13 @@ export class NoteUtils {
    * @param x: x co-ordinate in pixels
    * @param y: y co-ordinate in pixels
    */
-  public coordinateToNoteAndTick(x: number, y: number, width: number): TNote {
+  public coordinateToNoteAndTick(x: number, y: number, width: number): Note {
     // x dictates the time; y the note
-    const delta = Math.floor(x / this.pixelsPerBeat);
+    const start = Math.floor(x / this.pixelsPerBeat);
     const note = this.highestNote - Math.floor(y / this.barHeightPixels);
     const duration = Math.floor(width / this.pixelsPerBeat);
-    return { note, delta, duration };
+    const end = start + duration;
+    return { note, start, end };
   }
 
   public secondsToBeats(secs: number): number {
