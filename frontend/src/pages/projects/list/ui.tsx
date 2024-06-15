@@ -6,8 +6,8 @@ import { NoteDisplayCanvas } from "../../../components/musicBarComponent";
 import { NoteSequence, Note } from "../../../types";
 import { NoteUtils } from "../../../utils/notes";
 import * as Tone from "tone";
-import { Button } from "@chakra-ui/react";
 import { MusicPlayer } from "../../../music/playback";
+import { Button } from "antd";
 
 export function ProjectList() {
   const [playHeadPosition, setPlayheadPosition] = useState(0);

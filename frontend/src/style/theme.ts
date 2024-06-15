@@ -1,20 +1,11 @@
-export type AppTheme = {
-  colors: {
-    background: string;
-    gridLineMinor: string;
-    gridLineMajor: string;
-    gridRowOdd: string;
-    gridRowEven: string;
-    gridPlaybackLine: string;
-    gridCursorLine: string;
-    gridNoteFill: string;
-    gridNoteCreatingFill: string;
-  };
-};
+import type { Theme } from "@emotion/react";
 
-export const darkTheme: AppTheme = {
+export const darkTheme: Theme = {
   colors: {
     background: "#141414",
+    backgroundAlter: "#242424",
+    backgroundHighlighed: "#343434",
+    textColor: "#ddd",
     gridLineMinor: "#4E1E1E",
     gridLineMajor: "#333333",
     gridRowOdd: "#262626",

@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NoteUtils } from "../utils/notes";
-import { useTheme } from "@emotion/react";
 import { Layer, Line, Rect, Stage } from "react-konva";
-import { AppTheme } from "../style/theme";
 import { KonvaEventObject } from "konva/lib/Node";
 import { LineConfig, Line as LineType } from "konva/lib/shapes/Line";
 import { Note } from "../types";
-import { playNote } from "../midi/controller";
+import { theme } from "antd";
 
 export interface MusicBarProps {
   /**
@@ -45,8 +43,8 @@ export interface MusicBarProps {
 export function NoteDisplayCanvas(props: MusicBarProps) {
   const { playHeadTime, timeSignature, bpm, notes, setNotes, onPlayNote } = props;
   const cursorLineRef = useRef<LineType<LineConfig>>(null);
-  const theme = useTheme() as AppTheme;
   const [mouseDownNote, setMouseDownNote] = useState<null | Note>(null);
+  const { token } = theme.useToken()
 
   const defaultNewNoteSizeBeats = 1;
   const pixelsPerBeat = 20;
@@ -115,7 +113,7 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
         <Rect
           width={stageWidth}
           height={stageHeight}
-          fill={theme.colors.background}
+          fill={token.colorBgBase}
         />
         {[...Array(Math.floor(stageHeight / barHeightPixels))].map((_, i) => {
           // Note bars
@@ -127,7 +125,7 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
               x={0}
               y={i * barHeightPixels}
               fill={
-                i % 2 === 0 ? theme.colors.gridRowEven : theme.colors.gridRowOdd
+                i % 2 === 0 ? token.colorFillAlter : token.colorFill
               }
             />
           );
@@ -138,7 +136,7 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
           return (
             <Line
               key={i}
-              stroke={theme.colors.gridLineMajor}
+              stroke={token.blue7}
               width={1}
               points={[noteUtils.majorGridLinesResolution * i, 0, noteUtils.majorGridLinesResolution * i, stageHeight]}
             />

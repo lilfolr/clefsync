@@ -30,6 +30,11 @@ export class MusicPlayer {
   public async stop() {
     const transport = Tone.getTransport();
     transport.stop();
+  }
+
+  public async reset() {
+    const transport = Tone.getTransport();
+    await this.stop();
     transport.cancel();
     transport.position = 0;
   }
@@ -37,7 +42,6 @@ export class MusicPlayer {
   public async start(seq: NoteSequence, offset?: number) {
     const transport = Tone.getTransport();
     const bpm = transport.bpm.value; // Note: This wont work with changing BPM in song
-    console.log(seq);
     if (this.playerState === "started") {
       transport.stop();
       transport.cancel();
@@ -61,7 +65,7 @@ export class MusicPlayer {
         }
         console.log("Playing");
 
-        this.playNote(time, note);
+        this.playNote(note, time);
       },
       seq.notes.map((n) => ({ time: (n.start / bpm) * 60, note: n })),
     );
@@ -85,9 +89,9 @@ export class MusicPlayer {
     // });
   }
 
-  public playNote(note: Note) {
+  public playNote(note: Note, time?: number) {
     const duration = note.end - note.start;
     const freq = Tone.Frequency(note.note, "midi").toFrequency();
-    this.synth.triggerAttackRelease(freq, duration);
+    this.synth.triggerAttackRelease(freq, duration, time);
   }
 }
