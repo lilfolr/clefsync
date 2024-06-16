@@ -6,6 +6,7 @@ import { ScoreActionType, ScoreActions, ScoreState } from "./types";
 import { PlayBar } from "./playBar";
 import { IconDeviceFloppy } from "@tabler/icons-react";
 import { UndoTree } from "./undoTree";
+import { NoteDisplayCanvas } from "../../components/musicBarComponent";
 
 const initialScoreState: ScoreState = {
   selectedTrack: null,
@@ -95,7 +96,18 @@ export function MainApp() {
           {`+ New Track`}
         </Button>
       </div>
-      <div style={{ border: "1px black solid", flexGrow: 1 }}></div>
+      <div style={{ overflow: "scroll", border: "1px black solid", flexGrow: 1 }}>
+        <NoteDisplayCanvas
+          playHeadTime={playHeadPosition}
+          notes={[]}
+          setNotes={() => null}
+          bpm={bpm}
+          timeSignature={{
+            beatsPerMeasure: 4,
+            beatNoteValue: 4,
+          }}
+        />
+      </div>
       <Flex vertical style={{ border: "1px black solid", width: `${trackSelectorWidth}px` }}>
         <Segmented options={["Summary", "Detail"]} block />
         <Space>
@@ -104,8 +116,6 @@ export function MainApp() {
           </Tooltip>
         </Space>
         <UndoTree />
-
-
       </Flex>
     </Flex>
     <PlayBar bpm={bpm} setBpm={setBpm} state="PLAYING" totalPlaybackTime={100} currentPlaybackTime={40} setIsPlaying={() => { }} />

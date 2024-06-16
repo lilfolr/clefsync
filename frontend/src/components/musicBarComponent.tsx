@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { NoteUtils } from "../utils/notes";
-import { Layer, Line, Rect, Stage } from "react-konva";
+import { Layer, Line, Rect, Stage, Text } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { LineConfig, Line as LineType } from "konva/lib/shapes/Line";
 import { Note } from "../types";
-import { theme } from "antd";
+import { useTheme } from "@emotion/react";
 
 export interface MusicBarProps {
   /**
@@ -42,14 +41,14 @@ export interface MusicBarProps {
  */
 export function NoteDisplayCanvas(props: MusicBarProps) {
   const { playHeadTime, timeSignature, bpm, notes, setNotes, onPlayNote } = props;
-  const cursorLineRef = useRef<LineType<LineConfig>>(null);
   const [mouseDownNote, setMouseDownNote] = useState<null | Note>(null);
-  const { token } = theme.useToken()
+  const theme = useTheme();
 
   const defaultNewNoteSizeBeats = 1;
   const pixelsPerBeat = 20;
   const barHeightPixels = 15;
   const highestNote = 85;
+  const timeBarHeight = 30;
 
   const noteUtils = useMemo(() => {
     return new NoteUtils({
@@ -70,9 +69,8 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
   }, [mouseDownNote, notes, setNotes]);
 
   const onMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-    const { pageX } = e.evt;
-    const pageY = e.evt.pageY - 94; // FIXME: calculate from bounding box
-    const newNote: Note = noteUtils.coordinateToNoteAndTick(pageX, pageY, 0);
+    const { layerX, layerY } = e.evt;
+    const newNote: Note = noteUtils.coordinateToNoteAndTick(layerX, layerY, 0);
     newNote.end = newNote.start + defaultNewNoteSizeBeats;
     setMouseDownNote(newNote);
   };
@@ -85,9 +83,8 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
 
   const onMouseMove = (e: KonvaEventObject<MouseEvent>) => {
     if (mouseDownNote) {
-      const { pageX } = e.evt;
-      const pageY = e.evt.pageY - 94; // FIXME: calculate from bounding box
-      const newNote: Note = noteUtils.coordinateToNoteAndTick(pageX, pageY, 0);
+      const { layerX, layerY } = e.evt;
+      const newNote: Note = noteUtils.coordinateToNoteAndTick(layerX, layerY, 0);
       newNote.end = newNote.start + defaultNewNoteSizeBeats;
       setMouseDownNote(newNote);
     }
@@ -105,18 +102,74 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
 
   return (
     <Stage width={stageWidth} height={stageHeight}>
+      {/* Top Time Bar */}
       <Layer
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseMove={onMouseMove}
+        height={timeBarHeight}
       >
         <Rect
           width={stageWidth}
           height={stageHeight}
-          fill={token.colorBgBase}
+          fill={theme.colors.background}
         />
+        {/*Top Numbers*/}
+        {[...Array(Math.floor(stageWidth / noteUtils.majorGridLinesResolution))].map((_, i) => {
+          return <Text
+            key={i}
+            text={`${i}`}
+            fill="white"
+            y={3}
+            x={noteUtils.majorGridLinesResolution * i + 3}
+          />
+        })}
+        {/* Ticks */}
+        {[...Array(Math.floor(stageWidth / noteUtils.majorGridLinesResolution))].map((_, i) => {
+          // We dont want ticket to be too close (within 5 px)
+          const showQuaters = noteUtils.majorGridLinesResolution > 4 * 5
+          const showEights = noteUtils.majorGridLinesResolution > 8 * 5
+          const lines = [(
+            <Line
+              key={i}
+              stroke={theme.colors.gridLineMajor}
+              width={1}
+              points={[noteUtils.majorGridLinesResolution * i, 0, noteUtils.majorGridLinesResolution * i, timeBarHeight]}
+            />
+          )];
+          for (let j = 0; j < 8; j++) {
+            const offset = noteUtils.majorGridLinesResolution * i + noteUtils.majorGridLinesResolution * (j / 8);
+            if (showEights) {
+              lines.push(<Line
+                key={`${i}-${j}-8`}
+                stroke={theme.colors.gridLineMajor}
+                width={1}
+                points={[offset, timeBarHeight, offset, timeBarHeight * 0.8]}
+              />)
+            }
+            if (showQuaters && j % 2 === 0) {
+              lines.push(<Line
+                key={`${i}-${j}-4`}
+                stroke={theme.colors.gridLineMajor}
+                width={1}
+                points={[offset, timeBarHeight, offset, timeBarHeight * 0.5]}
+              />)
+            }
+          }
+          return lines;
+        })}
+
+      </Layer>
+      <Layer
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        offsetY={-timeBarHeight}
+      >
+        <Rect
+          width={stageWidth}
+          height={stageHeight}
+          fill={theme.colors.background}
+        />
+        {/* Horizontal note lines */}
         {[...Array(Math.floor(stageHeight / barHeightPixels))].map((_, i) => {
-          // Note bars
           return (
             <Rect
               key={i}
@@ -125,35 +178,35 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
               x={0}
               y={i * barHeightPixels}
               fill={
-                i % 2 === 0 ? token.colorFillAlter : token.colorFill
+                i % 2 === 0 ? theme.colors.gridRowOdd : theme.colors.gridRowEven
               }
             />
           );
         })}
+        {/* Vertical beat lines */}
         {[...Array(Math.floor(stageWidth / noteUtils.majorGridLinesResolution))].map((_, i) => {
-
-          // Bar grids
           return (
             <Line
               key={i}
-              stroke={token.blue7}
+              stroke={theme.colors.gridLineMajor}
               width={1}
               points={[noteUtils.majorGridLinesResolution * i, 0, noteUtils.majorGridLinesResolution * i, stageHeight]}
             />
           );
         })}
+        {/* Player Head */}
         <Line
-          stroke={theme.colors.gridPlaybackLine}
+          stroke={theme.colors.gridCursorLine}
           width={1}
           points={[playHeadTimePixels, 0, playHeadTimePixels, stageHeight]}
         />
-
+        {/* Notes */}
         {notes.map((note) => {
           const { x, y, width } = noteUtils.noteAndTickToCoordinate(note);
           return (
             <Rect
               key={`${x}${y}${width}`}
-              fill={theme.colors.gridNoteFill}
+              fill={theme.colors.gridLineMajor}
               x={x}
               y={y}
               width={width}
@@ -163,7 +216,7 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
         })}
         {mouseDownNote && (
           <Rect
-            fill={theme.colors.gridNoteCreatingFill}
+            fill={theme.colors.gridNoteFill}
             {...noteUtils.noteAndTickToCoordinate(mouseDownNote)}
             height={barHeightPixels}
           />

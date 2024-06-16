@@ -86,17 +86,6 @@ export function ProjectList() {
       <Button onClick={() => playSong()}>Play</Button>
       <Button onClick={() => stopSong()}>Stop</Button>
       <input type="file" onChange={handleChange} />
-      <NoteDisplayCanvas
-        playHeadTime={playHeadPosition}
-        notes={notes}
-        setNotes={setNotes}
-        onPlayNote={onPlayNote}
-        bpm={bpm}
-        timeSignature={{
-          beatsPerMeasure: 4,
-          beatNoteValue: 4,
-        }}
-      />
       {data && <MidiVisualizer midiFile={data} />}
     </div>
   );
