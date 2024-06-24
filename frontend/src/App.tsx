@@ -12,12 +12,12 @@ function App() {
     createRoutesFromElements(
       <Route path="/">
         <Route
-          path="song"
+          path="/song"
           element={<SongPage />}
           loader={projectListLoader}
         />
         <Route
-          path="projects"
+          path="/projects"
           element={<ProjectList />}
           loader={projectListLoader}
         />

@@ -1,3 +1,5 @@
+import { Note } from "../../types";
+
 export enum ScoreActionType {
   SELECT_TRACK,
   CREATE_TRACK,
@@ -7,25 +9,26 @@ export enum ScoreActionType {
 
 export type Track = {
   name: string;
+  notes: Note[];
   isMuted: boolean;
-  isSolo: boolean;
+  isVisible: boolean;
 };
 export type ScoreState = {
-  selectedTrack: string | null;
+  selectedTrackKey: string | null;
   tracks: Track[];
 };
 
 type SelectTrackAction = {
   type: ScoreActionType.SELECT_TRACK;
   payload: {
-    newTrack: string;
+    name: string;
   };
 };
 type UpdateTrackAction = {
   type: ScoreActionType.UPDATE_TRACK;
   payload: {
-    key: string;
-    updatedTrack: Track;
+    name: string;
+    updatedTrack: Partial<Track>;
   };
 };
 type CreateTrackAction = {

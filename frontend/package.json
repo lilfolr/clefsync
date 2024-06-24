@@ -19,6 +19,7 @@
     "antd": "^5.18.0",
     "dayjs": "^1.11.11",
     "framer-motion": "^11.2.4",
+    "immer": "^10.1.1",
     "konva": "^9.3.11",
     "midi-file": "^1.2.4",
     "midi-json-parser": "^8.1.46",
@@ -32,6 +33,7 @@
     "react-window": "^1.8.10",
     "tone": "^15.0.4",
     "typescript-graph": "^0.3.0",
+    "use-immer": "^0.10.0",
     "webmidi": "^3.1.9"
   },
   "devDependencies": {

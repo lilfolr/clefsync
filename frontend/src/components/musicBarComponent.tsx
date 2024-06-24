@@ -6,6 +6,12 @@ import { Note } from "../types";
 import { useTheme } from "@emotion/react";
 
 export interface MusicBarProps {
+
+  /**
+   * Read only. Disable 
+   */
+  readOnly: boolean,
+
   /**
    * Notes to render
    */
@@ -40,7 +46,7 @@ export interface MusicBarProps {
  * We want a bar to be around 150 pixels
  */
 export function NoteDisplayCanvas(props: MusicBarProps) {
-  const { playHeadTime, timeSignature, bpm, notes, setNotes, onPlayNote } = props;
+  const { readOnly, playHeadTime, timeSignature, bpm, notes, setNotes, onPlayNote } = props;
   const [mouseDownNote, setMouseDownNote] = useState<null | Note>(null);
   const theme = useTheme();
 
@@ -69,8 +75,9 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
   }, [mouseDownNote, notes, setNotes]);
 
   const onMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+    if (readOnly) { return; }
     const { layerX, layerY } = e.evt;
-    const newNote: Note = noteUtils.coordinateToNoteAndTick(layerX, layerY, 0);
+    const newNote: Note = noteUtils.coordinateToNoteAndTick(layerX, layerY - timeBarHeight, 0);
     newNote.end = newNote.start + defaultNewNoteSizeBeats;
     setMouseDownNote(newNote);
   };
@@ -82,19 +89,19 @@ export function NoteDisplayCanvas(props: MusicBarProps) {
   }, [onMouseUp]);
 
   const onMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if (mouseDownNote) {
+    if (mouseDownNote && !readOnly) {
       const { layerX, layerY } = e.evt;
-      const newNote: Note = noteUtils.coordinateToNoteAndTick(layerX, layerY, 0);
+      const newNote: Note = noteUtils.coordinateToNoteAndTick(layerX, layerY - timeBarHeight, 0);
       newNote.end = newNote.start + defaultNewNoteSizeBeats;
       setMouseDownNote(newNote);
     }
   };
 
   useEffect(() => {
-    if (mouseDownNote && onPlayNote) {
+    if (mouseDownNote && onPlayNote && !readOnly) {
       onPlayNote(mouseDownNote);
     }
-  }, [mouseDownNote, onPlayNote]);
+  }, [mouseDownNote, onPlayNote, readOnly]);
 
   const playHeadTimePixels = useMemo(() => pixelsPerBeat * (playHeadTime ?? 0), [playHeadTime]);
   const stageWidth = window.innerWidth;

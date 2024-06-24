@@ -2,6 +2,7 @@ import type { Theme } from "@emotion/react";
 
 export const darkTheme: Theme = {
   colors: {
+    accent1: "#1668dc",
     background: "#141414",
     backgroundAlter: "#242424",
     backgroundHighlighed: "#343434",

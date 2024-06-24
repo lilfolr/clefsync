@@ -4,6 +4,7 @@ import { Flex } from "antd";
 import styled from "@emotion/styled";
 import { Circle, Layer, Line, Stage } from "react-konva";
 import { ReactNode } from "react";
+import { useTheme } from "@emotion/react";
 
 const rowHeight = 30;
 
@@ -26,6 +27,7 @@ function UndoTreeCheckpointNode(props: UndoTreeCheckpointNodeProps) {
   const { width, height, type } = props;
   const circleDiameter = width - 10
   const center = { x: width / 2, y: height / 2 }
+  const theme = useTheme();
 
   const topLine = <Line
     points={[center.x, 0, center.x, center.y - circleDiameter / 2]}
@@ -41,8 +43,8 @@ function UndoTreeCheckpointNode(props: UndoTreeCheckpointNodeProps) {
     width={circleDiameter}
     height={circleDiameter}
     {...center}
-    fill={type.includes("OPEN") ? undefined : "blue"}
-    stroke={type.includes("OPEN") ? "blue" : undefined}
+    fill={type.includes("OPEN") ? undefined : theme.colors.accent1}
+    stroke={type.includes("OPEN") ? theme.colors.accent1 : undefined}
     dash={[4, 4]}
   />
   let drawing: ReactNode | null = null

@@ -1,7 +1,7 @@
 import { Instruments } from "../../consts";
-import { Button, Col, Flex, Row, Space, Typography } from "antd";
+import { Button, Row, Space, Typography } from "antd";
 import styled from '@emotion/styled'
-import { IconHeadphones, IconHeadphonesOff, IconVolume, IconVolumeOff } from "@tabler/icons-react";
+import { IconEye, IconEyeOff, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { MouseEventHandler } from "react";
 import { Track } from "./types";
 
@@ -16,7 +16,7 @@ export interface TrackSelectorProps {
   onSelect: () => void
 
   setMute: (value: boolean) => void,
-  setSolo: (value: boolean) => void,
+  setVisible: (value: boolean) => void,
 }
 
 const boxHeight = "70px"
@@ -40,13 +40,13 @@ const TrackSelectorRoot = styled.div <TrackSelectorRootProps>`
 export function TrackSelector(props: TrackSelectorProps) {
   const { width, instrument, channel, channelOptions, onSelect } = props;
   const { isSelected } = props;
-  const { isSolo, isMuted, name } = props.track
-  const { setMute, setSolo } = props;
+  const { isVisible, isMuted, name } = props.track
+  const { setMute, setVisible } = props;
 
   const titleWidth = 90;
   const instrumentWidth = width - titleWidth;
-  const toggleSolo: MouseEventHandler = e => {
-    setSolo(!isSolo)
+  const toggleVisible: MouseEventHandler = e => {
+    setVisible(!isVisible)
     e.preventDefault();
   }
   const toggleMute: MouseEventHandler = e => {
@@ -65,7 +65,7 @@ export function TrackSelector(props: TrackSelectorProps) {
         </Row>
         <Row>
           <Space>
-            <Button onClick={toggleSolo} icon={<IconHeadphones opacity={isSolo ? 1 : 0.40} />} />
+            <Button onClick={toggleVisible} icon={isVisible ? <IconEye /> : <IconEyeOff />} />
             <Button onClick={toggleMute} icon={isMuted ? <IconVolumeOff /> : <IconVolume />} />
           </Space>
         </Row>
