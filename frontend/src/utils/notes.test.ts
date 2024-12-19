@@ -45,18 +45,18 @@ describe("Grid lines", () => {
       highestNote: 96,
     });
     const [x, y, width] = [200, 500, 200];
-    const expectedDelta = 2; // 200 px => 2 beats
+    const expectedStart = 2; // 200 px => 2 beats
     const expectedNote = 86;
     const expectedDuration = 2; //2 beats
 
     const result = utils.coordinateToNoteAndTick(x, y, width);
-    expect(result.delta).toEqual(expectedDelta);
+    expect(result.start).toEqual(expectedStart);
     expect(result.note).toEqual(expectedNote);
     expect(result.duration).toEqual(expectedDuration);
 
     const pixelResult = utils.noteAndTickToCoordinate({
       note: 86,
-      delta: 2,
+      start: 2,
       duration: 0,
     });
     expect(pixelResult.y).toEqual(y);
@@ -75,18 +75,18 @@ describe("Grid lines", () => {
       highestNote: 96,
     });
     const [x, y, width] = [200, 0, 300];
-    const expectedDelta = 2; // 200 px => 2 beats
+    const expectedStart = 2; // 200 px => 2 beats
     const expectedNote = 96;
     const expectedDuration = 3;
 
     const noteResult = utils.coordinateToNoteAndTick(x, y, width);
-    expect(noteResult.delta).toEqual(expectedDelta);
+    expect(noteResult.start).toEqual(expectedStart);
     expect(noteResult.note).toEqual(expectedNote);
     expect(noteResult.duration).toEqual(expectedDuration);
 
     const pixelResult = utils.noteAndTickToCoordinate({
       note: 96,
-      delta: 2,
+      start: 2,
       duration: 0,
     });
     expect(pixelResult.y).toEqual(y);
@@ -104,5 +104,21 @@ describe("Grid lines", () => {
     knownConversions.forEach(([note, noteStr]) => {
       expect(NoteUtils.midiNoteToMusicalString(note)).toEqual(noteStr);
     });
+  });
+
+  it("should convert from bpm", () => {
+    const utils = new NoteUtils({
+      timeSignature: {
+        beatsPerMeasure: 4,
+        beatNoteValue: 4,
+      },
+      pixelsPerBeat: 100,
+      barHeightPixels: 50,
+      bpm: 100,
+      highestNote: 96,
+    });
+
+    expect(utils.secondsToBeats(60)).toEqual(100);
+    expect(utils.secondsToBeats(120)).toEqual(200);
   });
 });

@@ -4,15 +4,20 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
-import { RootLayout } from "./layout";
 import { projectListLoader, ProjectList } from "./pages/projects";
+import { SongPage } from "./pages/song";
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route element={<RootLayout />} path="/">
+      <Route path="/">
         <Route
-          path="projects"
+          path="/song"
+          element={<SongPage />}
+          loader={projectListLoader}
+        />
+        <Route
+          path="/projects"
           element={<ProjectList />}
           loader={projectListLoader}
         />
